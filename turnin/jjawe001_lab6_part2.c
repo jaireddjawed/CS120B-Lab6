@@ -101,23 +101,32 @@ void SM_Tick() {
 			}
 			break;
 		case PauseLight1:
-			if (!button) {
+			if (button) {
 				state = Light2First; 
+			}
+			else {
+				state = PauseLight1;
 			}
 			break;
 		case PauseLight2First:
-			if (!button) {
+			if (button) {
 				state = Light3;
+			} else {
+				state = PauseLight2First;
 			}
 			break;
 		case PauseLight2Second:
-			if (!button) {
+			if (button) {
 				state = Light1;
+			} else {
+				state = PauseLight2Second;
 			}
 			break;
 		case PauseLight3:
-			if (!button) {
+			if (button) {
 				state = Light2Second;
+			} else {
+				state = PauseLight3;
 			}
 			break;
 		default:
@@ -137,6 +146,7 @@ void SM_Tick() {
 	}
 
 	switch (state) {
+		case Start:
 		case PauseLight1:
 		case Light1:
 			PORTB = 0x01;
@@ -151,7 +161,6 @@ void SM_Tick() {
 		case Light3:
 			PORTB = 0x04;
 			break;
-		case Start:
 		default:
 			PORTB = 0x00;
 			break;
@@ -163,22 +172,14 @@ int main(void) {
     /* Insert DDR and PORT initializations */
 	DDRA = 0x00; PORTA = 0xFF;
 	DDRB = 0xFF; PORTB = 0x00;
-	TimerSet(3000);
+	TimerSet(300);
 	TimerOn();
 
 	// initial state
 	PORTB = 0x00;
-//unsigned char button = 0x00;
+
     while (1) {
 	SM_Tick();
-	//
-	//button = ~PINA & 0x01;
-	//if (button) {
-	//	PORTB = 0x01;
-	//}
-	//else {
-	//	PORTB = 0x00;
-	//}
 	while (!TimerFlag);
 	TimerFlag = 0;
     }
